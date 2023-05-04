@@ -1,0 +1,77 @@
+# This gets displayed on the actions page for your repository, so you know which workflow is running or has run.
+name: GitHub Actions Demo
+# Required. This tells GitHub which trigger you want to cause this workflow to be run. "push" - causes the workflow to run when code is committed to the repository.
+# If you want multiple triggers to apply, you can put them in an array using square brackets like [push, pull_request]
+on: push
+# A workflow is made up of one or more jobs. Each job runs in its own runner environment. We can have multiple jobs in this workflow, and each one will run on its
+# own virtual machine runner.
+jobs:
+  Example-Actions-Job:
+    # This will show up in the actions page when the workflow runs.
+    name: Exploring GitHub Actions
+    # Required. This is the type of the machine to run the job on. Some more examples of this kind are: windows-latest, macos-latest.
+    runs-on: ubuntu-latest
+    # steps - are the sequence of tasks that will be run. These can be commands, setup tasks, or actions. This is where we specify the actual GitHub Actions.
+    steps:
+      # Display the event that triggered the workflow. Use the "run" command to show some information about the environment.
+      # This will print to the log. The below "github" object is called a context. A context is a collection of properties about the
+      # environment or object that it represents. In this case, we'll be printing the name of the event that caused the workflow to run.
+      - run: echo "The job was triggered by a ${{ github.event_name }} event."
+      
+      # Runner information. Uses "runner" context to give "os" information used on the runner virtual machine provided by GitHub.
+      - run: echo "This job is now running on a ${{ runner.os }} server hosted by GitHub"
+      
+      # Information about the repository and branch
+      - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      
+      # Use Action located in https://github.com/actions. Below is the example for GitHub Action.
+      # This "name" will show in the log.
+      - name: Check out repository code
+      # Use the "uses" keyword to tell GitHub that this is an action and where the actual code for the action is stored.
+      # The actions repository is provided by GitHub, and the action we want to use from that repository is the checkout action.
+      # We provide a major version of a release of this action using the @ smbol followed by the version number.
+        uses: actions/checkout@v2  
+      
+      - run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+      
+      - run: echo "Your repository has been copied to the path ${{ github.workspace }} on the runner."
+      
+      - run: echo "The workflow is now ready to test your code on the runner."
+      
+      # Within your job, you can have conditional logic
+      - name: conditional step when event name is pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        run: echo "This event is a pull request"
+      
+      - name: List files in the repository
+      # Use "run" to list all the files that were copied from repo onto the runner.
+        run: |
+          ls ${{ github.workspace }}
+      
+      - name: Setup dotnet on runner
+      # This will install the .NET runtime we specify onto this runner. With actions, you can pass parameters using the "with" keyword.
+      # It installs .NET Core 3, the latest release.
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.x'
+      
+      - name: Display dotnet version
+      # Prints the version to the log
+        run: dotnet --version
+      
+      - run: echo "The preinstalled tools are located here on the runner ${{ runner.tool_cache }}."
+      
+      - name: List files in tool cache
+      # Each runner has certain tools already preconfigured, and you can list those tools using "tool_cache" variable in the runner context collection.
+        run: |
+          ls ${{ runner.tool_cache }}
+      
+      # "job" context can give us information about the currently running job.
+      - run: echo "This job's status is ${{ job.status }}."
+
+  Second-Job:
+    name: The second job running on another runner
+    runs-on: windows-latest
+    needs: Example-Actions-Job
+    steps:
+      - run: echo "This job is now running on a ${{ runner.os }} server hosted by GitHub."    
