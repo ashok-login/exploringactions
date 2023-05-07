@@ -6,8 +6,9 @@ on: push
 # A workflow is made up of one or more jobs. Each job runs in its own runner environment. We can have multiple jobs in this workflow, and each one will run on its
 # own virtual machine runner.
 jobs:
+  # This is the name of the job
   Example-Actions-Job:
-    # This will show up in the actions page when the workflow runs.
+    # This is the display name. This will show up in the actions page when the workflow runs.
     name: Exploring GitHub Actions
     # Required. This is the type of the machine to run the job on. Some more examples of this kind are: windows-latest, macos-latest.
     runs-on: ubuntu-latest
@@ -49,6 +50,7 @@ jobs:
           ls ${{ github.workspace }}
       
       - name: Setup dotnet on runner
+      # This one is also from the actions repository provided by GitHub, and the action name is: setup-dotnet
       # This will install the .NET runtime we specify onto this runner. With actions, you can pass parameters using the "with" keyword.
       # It installs .NET Core 3, the latest release.
         uses: actions/setup-dotnet@v1
