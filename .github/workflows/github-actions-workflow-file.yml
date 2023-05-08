@@ -6,7 +6,7 @@ on: push
 # A workflow is made up of one or more jobs. Each job runs in its own runner environment. We can have multiple jobs in this workflow, and each one will run on its
 # own virtual machine runner.
 jobs:
-  # This is the name of the job
+  # This is the name of the job which will show in the log
   Example-Actions-Job:
     # This is the display name. This will show up in the actions page when the workflow runs.
     name: Exploring GitHub Actions
@@ -72,8 +72,11 @@ jobs:
       - run: echo "This job's status is ${{ job.status }}."
 
   Second-Job:
+    # This is the name of the job which will show in the log
     name: The second job running on another runner
     runs-on: windows-latest
+    # By default, both of the jobs will run in parellel. If I want to foce the "Second-Job" to run after
+    # first job (Example-Actions-Job) is completed, I need to use "needs" keyword like shown below.
     needs: Example-Actions-Job
     steps:
       - run: echo "This job is now running on a ${{ runner.os }} server hosted by GitHub."    
